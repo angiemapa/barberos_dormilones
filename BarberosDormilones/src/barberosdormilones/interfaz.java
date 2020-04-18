@@ -152,10 +152,6 @@ public class interfaz extends javax.swing.JFrame {
 
         public void run() {
             while (true) {
-                if (sillasEspera > 0) {
-                    ocuparSilla(); // Muestra a los clientes que ocupan las sillas
-                }
-                //sillasEspera = disminuir(sillasEspera); // Disminuye el numero de sillas de espera vacias
                 // Inicio semáforo
                 while (clientesEspera > sillasEspera) { // Fin semáforo vacias
                     try {
@@ -167,8 +163,8 @@ public class interfaz extends javax.swing.JFrame {
             }
         }
 
-        private void ocuparSilla() {
-            switch (sillasEspera) {
+        private void ocuparSilla(int silla) {
+            switch (silla) {
                 case 1:
                     jLabelEspera1.setVisible(true);
                     break;
@@ -214,7 +210,7 @@ public class interfaz extends javax.swing.JFrame {
                 }
                 if (bandera) {
                     // Asignar silla
-                    activarSilla(contador);
+                    ocuparSilla(contador);
                 } else {
                     // Colocar en línea de espera "afuera"
                     clientesEspera++;
@@ -256,18 +252,6 @@ public class interfaz extends javax.swing.JFrame {
                 new interfaz().setVisible(true);
             }
         });
-    }
-
-    public void activarSilla(int silla) {
-        if (silla == 1) {
-            jLabelEspera1.setVisible(true);
-        } else if (silla == 2) {
-            jLabelEspera2.setVisible(true);
-        } else if (silla == 3) {
-            jLabelEspera3.setVisible(true);
-        } else if (silla == 4) {
-            jLabelEspera4.setVisible(true);
-        }
     }
 
     public int despertar(int barbero) {
