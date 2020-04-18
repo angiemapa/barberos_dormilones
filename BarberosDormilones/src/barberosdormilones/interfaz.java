@@ -4,10 +4,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author PAOLITA
- */
 public class interfaz extends javax.swing.JFrame {
 
     private static int clientesEspera = 0;              // cantidad de sillas en espera ocupadas
@@ -16,6 +12,7 @@ public class interfaz extends javax.swing.JFrame {
     public boolean[] arrayEspera = new boolean[4];      // Array para verificar las sillas disponibles
 
     public interfaz() {
+        this.setResizable(false);
         initComponents();
         this.setLocationRelativeTo(null);
         jLabelEspera1.setVisible(false);
@@ -154,15 +151,15 @@ public class interfaz extends javax.swing.JFrame {
             while (true) {
                 // Inicio semáforo
                 for (int x = 0; x < arrayBarberos.length; x++) {
-                    if(!arrayBarberos[x]){
-                        quitarCliente(x+1);
-                        dormir(x+1);
+                    if (!arrayBarberos[x]) {
+                        quitarCliente(x + 1);
+                        dormir(x + 1);
                     }
                 }
-                
+
                 for (int x = 0; x < arrayEspera.length; x++) {
-                    if(!arrayEspera[x]){
-                        desocuparSillaEspera(x+1);
+                    if (!arrayEspera[x]) {
+                        desocuparSillaEspera(x + 1);
                     }
                 }
             }
@@ -196,7 +193,7 @@ public class interfaz extends javax.swing.JFrame {
             for (int x = 0; x < arrayBarberos.length; x++) {
                 if (!arrayBarberos[x]) {
                     arrayBarberos[x] = true;
-                    contador = x+1;
+                    contador = x + 1;
                     bandera = true;
                     break;
                 }
@@ -208,7 +205,7 @@ public class interfaz extends javax.swing.JFrame {
                 for (int x = 0; x < arrayEspera.length; x++) {
                     if (!arrayEspera[x]) {
                         arrayEspera[x] = true;
-                        contador = x+1;
+                        contador = x + 1;
                         bandera = true;
                         break;
                     }
@@ -259,11 +256,13 @@ public class interfaz extends javax.swing.JFrame {
         });
     }
 
-    public class atenderCliente extends Thread{
+    public class atenderCliente extends Thread {
+
         private int contador = -1;
-        public void run(){
+
+        public void run() {
             Random rand = new Random();
-            int numeroAleatorio = rand.nextInt(15); 
+            int numeroAleatorio = rand.nextInt(15);
 
             try {
                 Thread.sleep(numeroAleatorio * 1000);
@@ -272,64 +271,88 @@ public class interfaz extends javax.swing.JFrame {
             }
             quitarCliente();
         }
-        
-        private void quitarCliente(){
+
+        private void quitarCliente() {
             arrayBarberos[contador - 1] = false;
         }
     }
-    
-    public void desocuparSillaEspera(int silla){
-        if (silla == 1)
-            jLabelEspera1.setVisible(false);
-        else if (silla == 2)
-            jLabelEspera2.setVisible(false);
-        else if (silla == 3)
-            jLabelEspera3.setVisible(false);
-        else if (silla == 4)
-            jLabelEspera4.setVisible(false);
+
+    public void desocuparSillaEspera(int silla) {
+        switch (silla) {
+            case 1:
+                jLabelEspera1.setVisible(false);
+                break;
+            case 2:
+                jLabelEspera2.setVisible(false);
+                break;
+            case 3:
+                jLabelEspera3.setVisible(false);
+                break;
+            case 4:
+                jLabelEspera4.setVisible(false);
+                break;
+            default:
+                break;
+        }
     }
-    
+
     public int despertar(int barbero) {
-        if (barbero == 1) {
-            jLabelBarberoA.setVisible(true);
-            jLabelatencion1.setVisible(true);
-            atenderCliente atender = new atenderCliente();
-            atender.contador = barbero;
-            atender.start();
-            
-        } else if (barbero == 2) {
-            jLabelBarbero2A.setVisible(true);
-            jLabelatencion2.setVisible(true);
-            atenderCliente atender = new atenderCliente();
-            atender.contador = barbero;
-            atender.start();
-        } else {
-            jLabelBarbero3A.setVisible(true);
-            jLabelAtencion3.setVisible(true);
-            atenderCliente atender = new atenderCliente();
-            atender.contador = barbero;
-            atender.start();
+        switch (barbero) {
+            case 1: {
+                jLabelBarberoA.setVisible(true);
+                jLabelatencion1.setVisible(true);
+                atenderCliente atender = new atenderCliente();
+                atender.contador = barbero;
+                atender.start();
+                break;
+            }
+            case 2: {
+                jLabelBarbero2A.setVisible(true);
+                jLabelatencion2.setVisible(true);
+                atenderCliente atender = new atenderCliente();
+                atender.contador = barbero;
+                atender.start();
+                break;
+            }
+            default: {
+                jLabelBarbero3A.setVisible(true);
+                jLabelAtencion3.setVisible(true);
+                atenderCliente atender = new atenderCliente();
+                atender.contador = barbero;
+                atender.start();
+                break;
+            }
         }
         return 1;
     }
 
     public void quitarCliente(int cliente) {
-        if (cliente == 1) {
-            jLabelatencion1.setVisible(false);
-        } else if (cliente == 2) {
-            jLabelatencion2.setVisible(false);
-        } else if (cliente == 3) {
-            jLabelAtencion3.setVisible(false);
+        switch (cliente) {
+            case 1:
+                jLabelatencion1.setVisible(false);
+                break;
+            case 2:
+                jLabelatencion2.setVisible(false);
+                break;
+            case 3:
+                jLabelAtencion3.setVisible(false);
+                break;
+            default:
+                break;
         }
     }
 
     public int dormir(int barbero) {
-        if (barbero == 1) {
-            jLabelBarberoA.setVisible(false);
-        } else if (barbero == 2) {
-            jLabelBarbero2A.setVisible(false);
-        } else {
-            jLabelBarbero3A.setVisible(false);
+        switch (barbero) {
+            case 1:
+                jLabelBarberoA.setVisible(false);
+                break;
+            case 2:
+                jLabelBarbero2A.setVisible(false);
+                break;
+            default:
+                jLabelBarbero3A.setVisible(false);
+                break;
         }
         return 1;
     }
