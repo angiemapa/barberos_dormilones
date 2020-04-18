@@ -5,17 +5,28 @@
  */
 package barberosdormilones;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author PAOLITA
  */
 public class interfaz extends javax.swing.JFrame {
-
+    private static int clientesEspera = 0; //cantidad de sillas en espera ocupadas
+    private static int sillasEspera = 4; //cantidad de sillas en espera ocupadas
+    private Crear c = new Crear(); // Instancia del hilo para crear clientes
+    
     /**
      * Creates new form interfaz
      */
     public interfaz() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        jLabelEspera1.setVisible(false);
+        jLabelEspera2.setVisible(false);
+        jLabelEspera3.setVisible(false);
+        jLabelEspera4.setVisible(false);
     }
 
   
@@ -134,9 +145,59 @@ public class interfaz extends javax.swing.JFrame {
     private void jButtonAgregarProcesoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAgregarProcesoActionPerformed
         // TODO add your handling code here:
         despertar(1);      
-    
+        c.start();
     }//GEN-LAST:event_jButtonAgregarProcesoActionPerformed
 
+    public int disminuir(int semaforo){
+        semaforo--;
+        return semaforo;
+    }
+    
+    //Crea un proceso(Cliente)
+    private class Crear extends Thread{
+        public void run(){
+            while(true){ // Ciclo del productor
+                clientesEspera++; //aumenta el numero de clientes en espera por la silla
+                if(sillasEspera > 0)
+                    ocuparSilla(); // Muestra a los clientes que ocupan las sillas
+                    sillasEspera = disminuir(sillasEspera); // Disminuye el numero de sillas de espera vacias
+                // Inicio semáforo
+                while (clientesEspera > sillasEspera)
+                    
+                   
+                // Fin semáforo vacias
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(interfaz.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    
+        private void ocuparSilla(){
+            switch(sillasEspera){
+                case 4:
+                    jLabelEspera1.setVisible(true);
+                    break;
+                case 3:
+                    jLabelEspera2.setVisible(true);
+                    break;
+                case 2:
+                    jLabelEspera3.setVisible(true);
+                    break;
+                case 1:
+                    jLabelEspera4.setVisible(true);
+                    break;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(interfaz.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+           
+    
     /**
      * @param args the command line arguments
      */
