@@ -19,6 +19,7 @@ public class BarberosDormilones {
         interfaz inicio = new interfaz();
         inicio.setVisible (true);  
         
+        
         inicio.dormir(1);
         inicio.dormir(2);
         inicio.dormir(3);
