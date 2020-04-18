@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package barberosdormilones;
 
 import java.util.logging.Level;
@@ -13,13 +8,13 @@ import java.util.logging.Logger;
  * @author PAOLITA
  */
 public class interfaz extends javax.swing.JFrame {
-    private static int clientesEspera = 0; //cantidad de sillas en espera ocupadas
-    private static int sillasEspera = 4; //cantidad de sillas en espera ocupadas
-    private Crear c = new Crear(); // Instancia del hilo para crear clientes
-    
-    /**
-     * Creates new form interfaz
-     */
+
+    private static int clientesEspera = 0;              // cantidad de sillas en espera ocupadas
+    private static int sillasEspera = 0;                // cantidad de sillas en espera ocupadas
+    private Crear c = new Crear();                      // Instancia del hilo para crear clientes
+    public boolean[] arrayBarberos = new boolean[3];    // Array para verificar los barberos disponibles
+    public boolean[] arrayEspera = new boolean[4];      // Array para verificar las sillas disponibles
+
     public interfaz() {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -27,9 +22,9 @@ public class interfaz extends javax.swing.JFrame {
         jLabelEspera2.setVisible(false);
         jLabelEspera3.setVisible(false);
         jLabelEspera4.setVisible(false);
+        c.start();
     }
 
-  
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -144,48 +139,46 @@ public class interfaz extends javax.swing.JFrame {
 
     private void jButtonAgregarProcesoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAgregarProcesoActionPerformed
         // TODO add your handling code here:
-        despertar(1);      
-        c.start();
+        c.nuevoProceso();
     }//GEN-LAST:event_jButtonAgregarProcesoActionPerformed
 
-    public int disminuir(int semaforo){
+    public int disminuir(int semaforo) {
         semaforo--;
         return semaforo;
     }
-    
+
     //Crea un proceso(Cliente)
-    private class Crear extends Thread{
-        public void run(){
-            while(true){ // Ciclo del productor
-                clientesEspera++; //aumenta el numero de clientes en espera por la silla
-                if(sillasEspera > 0)
+    private class Crear extends Thread {
+
+        public void run() {
+            while (true) {
+                if (sillasEspera > 0) {
                     ocuparSilla(); // Muestra a los clientes que ocupan las sillas
-                    sillasEspera = disminuir(sillasEspera); // Disminuye el numero de sillas de espera vacias
+                }
+                //sillasEspera = disminuir(sillasEspera); // Disminuye el numero de sillas de espera vacias
                 // Inicio semáforo
-                while (clientesEspera > sillasEspera)
-                    
-                   
-                // Fin semáforo vacias
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(interfaz.class.getName()).log(Level.SEVERE, null, ex);
+                while (clientesEspera > sillasEspera) { // Fin semáforo vacias
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(interfaz.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }
-    
-        private void ocuparSilla(){
-            switch(sillasEspera){
-                case 4:
+
+        private void ocuparSilla() {
+            switch (sillasEspera) {
+                case 1:
                     jLabelEspera1.setVisible(true);
                     break;
-                case 3:
+                case 2:
                     jLabelEspera2.setVisible(true);
                     break;
-                case 2:
+                case 3:
                     jLabelEspera3.setVisible(true);
                     break;
-                case 1:
+                case 4:
                     jLabelEspera4.setVisible(true);
                     break;
             }
@@ -195,9 +188,41 @@ public class interfaz extends javax.swing.JFrame {
                 Logger.getLogger(interfaz.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+
+        private void nuevoProceso() {
+            int contador = -1;
+            boolean bandera = false;
+            for (int x = 0; x < arrayBarberos.length; x++) {
+                if (!arrayBarberos[x]) {
+                    arrayBarberos[x] = true;
+                    contador = x;
+                    bandera = true;
+                    break;
+                }
+            }
+            if (bandera) {
+                despertar(contador);
+            } else {
+                //Si todos los barberos están ocupados, examina las sillas
+                for (int x = 0; x < arrayEspera.length; x++) {
+                    if (!arrayEspera[x]) {
+                        arrayEspera[x] = true;
+                        contador = x+1;
+                        bandera = true;
+                        break;
+                    }
+                }
+                if (bandera) {
+                    // Asignar silla
+                    activarSilla(contador);
+                } else {
+                    // Colocar en línea de espera "afuera"
+                    clientesEspera++;
+                }
+            }
+        }
     }
-           
-    
+
     /**
      * @param args the command line arguments
      */
@@ -233,26 +258,53 @@ public class interfaz extends javax.swing.JFrame {
         });
     }
 
-     public int despertar(int barbero){
-         if(barbero==1)
-             jLabelBarberoA.setVisible(true);
-         else if (barbero==2)
-             jLabelBarbero2A.setVisible(true);
-         else
-             jLabelBarbero3A.setVisible(true);
-         return 1;
-     }
-     
-     public int dormir(int barbero){
-         if(barbero==1)
-             jLabelBarberoA.setVisible(false);
-         else if (barbero==2)
-             jLabelBarbero2A.setVisible(false);
-         else
-             jLabelBarbero3A.setVisible(false);
-         return 1;
-     }
-     
+    public void activarSilla(int silla) {
+        if (silla == 1) {
+            jLabelEspera1.setVisible(true);
+        } else if (silla == 2) {
+            jLabelEspera2.setVisible(true);
+        } else if (silla == 3) {
+            jLabelEspera3.setVisible(true);
+        } else if (silla == 4) {
+            jLabelEspera4.setVisible(true);
+        }
+    }
+
+    public int despertar(int barbero) {
+        if (barbero == 1) {
+            jLabelBarberoA.setVisible(true);
+            jLabelatencion1.setVisible(true);
+        } else if (barbero == 2) {
+            jLabelBarbero2A.setVisible(true);
+            jLabelatencion2.setVisible(true);
+        } else {
+            jLabelBarbero3A.setVisible(true);
+            jLabelAtencion3.setVisible(true);
+        }
+        return 1;
+    }
+
+    public void quitarCliente(int cliente) {
+        if (cliente == 1) {
+            jLabelatencion1.setVisible(false);
+        } else if (cliente == 2) {
+            jLabelatencion2.setVisible(false);
+        } else if (cliente == 3) {
+            jLabelAtencion3.setVisible(false);
+        }
+    }
+
+    public int dormir(int barbero) {
+        if (barbero == 1) {
+            jLabelBarberoA.setVisible(false);
+        } else if (barbero == 2) {
+            jLabelBarbero2A.setVisible(false);
+        } else {
+            jLabelBarbero3A.setVisible(false);
+        }
+        return 1;
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAgregarProceso;
     private javax.swing.JLabel jLabel1;
