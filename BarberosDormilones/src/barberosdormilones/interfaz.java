@@ -1,5 +1,6 @@
 package barberosdormilones;
 
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,7 +11,6 @@ import java.util.logging.Logger;
 public class interfaz extends javax.swing.JFrame {
 
     private static int clientesEspera = 0;              // cantidad de sillas en espera ocupadas
-    private static int sillasEspera = 0;                // cantidad de sillas en espera ocupadas
     private Crear c = new Crear();                      // Instancia del hilo para crear clientes
     public boolean[] arrayBarberos = new boolean[3];    // Array para verificar los barberos disponibles
     public boolean[] arrayEspera = new boolean[4];      // Array para verificar las sillas disponibles
@@ -153,11 +153,16 @@ public class interfaz extends javax.swing.JFrame {
         public void run() {
             while (true) {
                 // Inicio semáforo
-                while (clientesEspera > sillasEspera) { // Fin semáforo vacias
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(interfaz.class.getName()).log(Level.SEVERE, null, ex);
+                for (int x = 0; x < arrayBarberos.length; x++) {
+                    if(!arrayBarberos[x]){
+                        quitarCliente(x+1);
+                        dormir(x+1);
+                    }
+                }
+                
+                for (int x = 0; x < arrayEspera.length; x++) {
+                    if(!arrayEspera[x]){
+                        desocuparSillaEspera(x+1);
                     }
                 }
             }
@@ -191,7 +196,7 @@ public class interfaz extends javax.swing.JFrame {
             for (int x = 0; x < arrayBarberos.length; x++) {
                 if (!arrayBarberos[x]) {
                     arrayBarberos[x] = true;
-                    contador = x;
+                    contador = x+1;
                     bandera = true;
                     break;
                 }
@@ -254,16 +259,56 @@ public class interfaz extends javax.swing.JFrame {
         });
     }
 
+    public class atenderCliente extends Thread{
+        private int contador = -1;
+        public void run(){
+            Random rand = new Random();
+            int numeroAleatorio = rand.nextInt(15); 
+
+            try {
+                Thread.sleep(numeroAleatorio * 1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(interfaz.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            quitarCliente();
+        }
+        
+        private void quitarCliente(){
+            arrayBarberos[contador - 1] = false;
+        }
+    }
+    
+    public void desocuparSillaEspera(int silla){
+        if (silla == 1)
+            jLabelEspera1.setVisible(false);
+        else if (silla == 2)
+            jLabelEspera2.setVisible(false);
+        else if (silla == 3)
+            jLabelEspera3.setVisible(false);
+        else if (silla == 4)
+            jLabelEspera4.setVisible(false);
+    }
+    
     public int despertar(int barbero) {
         if (barbero == 1) {
             jLabelBarberoA.setVisible(true);
             jLabelatencion1.setVisible(true);
+            atenderCliente atender = new atenderCliente();
+            atender.contador = barbero;
+            atender.start();
+            
         } else if (barbero == 2) {
             jLabelBarbero2A.setVisible(true);
             jLabelatencion2.setVisible(true);
+            atenderCliente atender = new atenderCliente();
+            atender.contador = barbero;
+            atender.start();
         } else {
             jLabelBarbero3A.setVisible(true);
             jLabelAtencion3.setVisible(true);
+            atenderCliente atender = new atenderCliente();
+            atender.contador = barbero;
+            atender.start();
         }
         return 1;
     }
