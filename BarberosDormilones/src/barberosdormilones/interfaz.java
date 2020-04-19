@@ -261,19 +261,50 @@ public class interfaz extends javax.swing.JFrame {
         private int contador = -1;
 
         public void run() {
-            Random rand = new Random();
-            int numeroAleatorio = rand.nextInt(15);
+            int numeroAleatorio = getRandomNumberInRange(10, 15);
 
             try {
                 Thread.sleep(numeroAleatorio * 1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(interfaz.class.getName()).log(Level.SEVERE, null, ex);
             }
-            quitarCliente();
+            clienteSatisfecho();
         }
 
-        private void quitarCliente() {
+        private void clienteSatisfecho() {
             arrayBarberos[contador - 1] = false;
+            System.out.println("Adios, te atendio " + contador);
+            verificarEspera();
+        }
+        
+        private void verificarEspera(){
+            if (arrayEspera[0] == true) {
+                if (arrayEspera[1] == true) {
+                    if (arrayEspera[2] == true) {
+                        if (arrayEspera[3] == true) {   
+                            arrayEspera[3] = false;
+                            desocuparSillaEspera(4);
+                        }
+                        else{
+                            arrayEspera[2] = false;
+                            desocuparSillaEspera(3);
+                        }
+                    }
+                    else{
+                        arrayEspera[1] = false;
+                        desocuparSillaEspera(2);
+                    }
+                }
+                else{
+                    arrayEspera[0] = false;
+                    desocuparSillaEspera(1);
+                }
+                arrayBarberos[contador - 1] = true;   
+                System.out.println("Hola, te atiende " + contador);
+                despertar(contador);
+                quitarCliente(contador);
+                dormir(contador);
+            }  
         }
     }
 
@@ -356,7 +387,14 @@ public class interfaz extends javax.swing.JFrame {
         }
         return 1;
     }
+    private static int getRandomNumberInRange(int min, int max) {
+        if (min >= max) {
+            throw new IllegalArgumentException("max must be greater than min");
+        }
 
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAgregarProceso;
     private javax.swing.JLabel jLabel1;
