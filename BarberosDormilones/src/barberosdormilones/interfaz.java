@@ -154,6 +154,8 @@ public class interfaz extends javax.swing.JFrame {
                     if (!arrayBarberos[x]) {
                         quitarCliente(x + 1);
                         dormir(x + 1);
+                    }else{
+                        activar(x + 1);
                     }
                 }
 
@@ -276,35 +278,30 @@ public class interfaz extends javax.swing.JFrame {
             System.out.println("Adios, te atendio " + contador);
             verificarEspera();
         }
-        
-        private void verificarEspera(){
+
+        private void verificarEspera() {
             if (arrayEspera[0] == true) {
                 if (arrayEspera[1] == true) {
                     if (arrayEspera[2] == true) {
-                        if (arrayEspera[3] == true) {   
+                        if (arrayEspera[3] == true) {
                             arrayEspera[3] = false;
                             desocuparSillaEspera(4);
-                        }
-                        else{
+                        } else {
                             arrayEspera[2] = false;
                             desocuparSillaEspera(3);
                         }
-                    }
-                    else{
+                    } else {
                         arrayEspera[1] = false;
                         desocuparSillaEspera(2);
                     }
-                }
-                else{
+                } else {
                     arrayEspera[0] = false;
                     desocuparSillaEspera(1);
                 }
-                arrayBarberos[contador - 1] = true;   
+                arrayBarberos[contador - 1] = true;
                 System.out.println("Hola, te atiende " + contador);
                 despertar(contador);
-                quitarCliente(contador);
-                dormir(contador);
-            }  
+            }
         }
     }
 
@@ -327,6 +324,26 @@ public class interfaz extends javax.swing.JFrame {
         }
     }
 
+    public void activar(int barbero) {
+        switch (barbero) {
+            case 1: {
+                jLabelBarberoA.setVisible(true);
+                jLabelatencion1.setVisible(true);
+                break;
+            }
+            case 2: {
+                jLabelBarbero2A.setVisible(true);
+                jLabelatencion2.setVisible(true);
+                break;
+            }
+            case 3: {
+                jLabelBarbero3A.setVisible(true);
+                jLabelAtencion3.setVisible(true);
+                break;
+            }
+        }
+    }
+
     public int despertar(int barbero) {
         switch (barbero) {
             case 1: {
@@ -345,7 +362,7 @@ public class interfaz extends javax.swing.JFrame {
                 atender.start();
                 break;
             }
-            default: {
+            case 3: {
                 jLabelBarbero3A.setVisible(true);
                 jLabelAtencion3.setVisible(true);
                 atenderCliente atender = new atenderCliente();
@@ -387,6 +404,7 @@ public class interfaz extends javax.swing.JFrame {
         }
         return 1;
     }
+
     private static int getRandomNumberInRange(int min, int max) {
         if (min >= max) {
             throw new IllegalArgumentException("max must be greater than min");
